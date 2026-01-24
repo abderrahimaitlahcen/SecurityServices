@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustGuard - Services de Confiance Numérique</title>
+    <meta name="description" content="Solutions de signature électronique, certificats numériques, chiffrement RSA/AES et QR codes sécurisés. Leader français de la confiance numérique.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background: 222 47% 6%;
+            --foreground: 180 100% 95%;
+            --primary: 180 100% 50%;
+            --primary-glow: 180 100% 70%;
+            --secondary: 222 30% 12%;
+            --muted: 222 30% 18%;
+            --muted-foreground: 180 20% 60%;
+            --border: 180 30% 20%;
+            --accent: 180 100% 50%;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+            line-height: 1.6;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background: hsla(var(--background), 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid hsl(var(--border));
+        }
+
+        .navbar-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: hsl(var(--foreground));
+        }
+
+        .logo-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px hsla(var(--primary), 0.3);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: hsl(var(--muted-foreground));
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: hsl(var(--primary));
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            font-size: 0.875rem;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid hsl(var(--border));
+            color: hsl(var(--foreground));
+        }
+
+        .btn-outline:hover {
+            background: hsla(var(--primary), 0.1);
+            border-color: hsl(var(--primary));
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, hsl(var(--primary)), hsl(180 100% 40%));
+            color: hsl(var(--background));
+            box-shadow: 0 0 20px hsla(var(--primary), 0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 30px hsla(var(--primary), 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 6rem 1.5rem 4rem;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(hsla(var(--primary), 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, hsla(var(--primary), 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .hero-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, hsla(var(--primary), 0.15), transparent 70%);
+            border-radius: 50%;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        .hero-glow-1 {
+            top: -200px;
+            right: -200px;
+        }
+
+        .hero-glow-2 {
+            bottom: -200px;
+            left: -200px;
+            animation-delay: 2s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        .hero-content {
+            max-width: 900px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: hsla(var(--primary), 0.1);
+            border: 1px solid hsla(var(--primary), 0.3);
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: hsl(var(--primary));
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: hsl(var(--muted-foreground));
+            margin-bottom: 2.5rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 4rem;
+        }
+
+        .trust-section {
+            padding-top: 3rem;
+            border-top: 1px solid hsl(var(--border));
+        }
+
+        .trust-section p {
+            font-size: 0.875rem;
+            color: hsl(var(--muted-foreground));
+            margin-bottom: 1rem;
+        }
+
+        .trust-logos {
+            display: flex;
+            gap: 2.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .trust-logos span {
+            font-weight: 600;
+            color: hsl(var(--muted-foreground));
+            opacity: 0.7;
+        }
+
+        /* Services Section */
+        .services {
+            padding: 6rem 1.5rem;
+            background: linear-gradient(180deg, transparent, hsla(var(--secondary), 0.5));
+        }
+
+        .section-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: hsl(var(--muted-foreground));
+            font-size: 1.125rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .service-card {
+            background: hsl(var(--secondary));
+            border: 1px solid hsl(var(--border));
+            border-radius: 1rem;
+            padding: 2rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .service-card:hover {
+            border-color: hsl(var(--primary));
+            box-shadow: 0 0 30px hsla(var(--primary), 0.1);
+            transform: translateY(-4px);
+        }
+
+        .service-icon {
+            width: 3.5rem;
+            height: 3.5rem;
+            background: linear-gradient(135deg, hsla(var(--primary), 0.2), hsla(var(--primary), 0.1));
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: hsl(var(--primary));
+        }
+
+        .service-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .service-card > p {
+            color: hsl(var(--muted-foreground));
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            font-size: 0.875rem;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .feature-list li::before {
+            content: "✓";
+            color: hsl(var(--primary));
+            font-weight: bold;
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 6rem 1.5rem;
+            background: hsl(var(--secondary));
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: hsl(var(--primary));
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: hsl(var(--muted-foreground));
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 6rem 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .cta h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta p {
+            color: hsl(var(--muted-foreground));
+            font-size: 1.125rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+
+        .trust-badges {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .trust-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: hsla(var(--secondary), 0.5);
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            color: hsl(var(--muted-foreground));
+        }
+
+        /* Footer */
+        .footer {
+            background: hsl(var(--secondary));
+            border-top: 1px solid hsl(var(--border));
+            padding: 4rem 1.5rem 2rem;
+        }
+
+        .footer-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr repeat(4, 1fr);
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (max-width: 1024px) {
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .footer-brand p {
+            color: hsl(var(--muted-foreground));
+            margin-top: 1rem;
+            max-width: 300px;
+        }
+
+        .footer-links h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: hsl(var(--foreground));
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: hsl(var(--muted-foreground));
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: hsl(var(--primary));
+        }
+
+        .footer-bottom {
+            padding-top: 2rem;
+            border-top: 1px solid hsl(var(--border));
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-bottom p {
+            color: hsl(var(--muted-foreground));
+            font-size: 0.875rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links, .nav-buttons {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes scan {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+
+        .scan-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, hsl(var(--primary)), transparent);
+            animation: scan 8s linear infinite;
+            opacity: 0.3;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: hsl(var(--secondary));
+            border: 1px solid hsl(var(--border));
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: hsl(var(--muted-foreground));
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: hsl(var(--foreground));
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: hsl(var(--foreground));
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: hsl(var(--background));
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.5rem;
+            color: hsl(var(--foreground));
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: hsl(var(--primary));
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert.success {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            color: #4CAF50;
+        }
+
+        .alert.error {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            color: #f44336;
+        }
+
+        .alert.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="logo">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </div>
+                <span class="logo-text">TrustGuard</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#services">Services</a></li>
+                <li><a href="#solutions">Solutions</a></li>
+                <li><a href="#tarifs">Tarifs</a></li>
+                <li><a href="#ressources">Ressources</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <a href="/app" class="btn btn-outline">Utiliser l'app</a>
+                <a href="#" onclick="openModal('qrModal'); return false;" class="btn btn-primary">Commencer</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-glow hero-glow-1"></div>
+        <div class="hero-glow hero-glow-2"></div>
+        <div class="scan-line"></div>
+        
+        <div class="hero-content">
+            <div class="badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                Certifié eIDAS & RGS
+            </div>
+            
+            <h1>
+                Sécurisez votre<br>
+                <span class="gradient-text">confiance numérique</span>
+            </h1>
+            
+            <p>
+                Solutions complètes de signature électronique, certificats numériques, 
+                chiffrement RSA/AES et QR codes sécurisés pour protéger vos échanges.
+            </p>
+            
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="showServices(event)">
+                    Commencer maintenant
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </button>
+                <a href="#services" class="btn btn-outline">Voir les services</a>
+            </div>
+            
+            <div class="trust-section">
+                <p>Ils nous font confiance</p>
+                <div class="trust-logos">
+                    <span>BNP Paribas</span>
+                    <span>Orange</span>
+                    <span>Airbus</span>
+                    <span>Total</span>
+                    <span>SNCF</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services" id="services">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Nos <span class="gradient-text">Services</span></h2>
+                <p>Des solutions de confiance numérique certifiées pour sécuriser tous vos processus métier</p>
+            </div>
+            
+            <div class="services-grid">
+                <!-- QR Codes Sécurisés -->
+                <div class="service-card" id="service-qr" onclick="openModal('qrModal')">
+                    <div class="service-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                            <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/>
+                        </svg>
+                    </div>
+                    <h3>QR Codes Sécurisés</h3>
+                    <p>Génération de QR codes cryptographiquement signés avec vérification d'authenticité intégrée.</p>
+                    <ul class="feature-list">
+                        <li>Signature cryptographique</li>
+                        <li>Vérification instantanée</li>
+                        <li>Traçabilité complète</li>
+                    </ul>
+                </div>
+
+                <!-- Signature Électronique -->
+                <div class="service-card" id="service-signature" onclick="openModal('signatureModal')">
+                    <div class="service-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                        </svg>
+                    </div>
+                    <h3>Signature Électronique</h3>
+                    <p>Signature électronique qualifiée conforme eIDAS pour tous vos documents professionnels.</p>
+                    <ul class="feature-list">
+                        <li>Conforme eIDAS</li>
+                        <li>Valeur juridique</li>
+                        <li>Multi-signataires</li>
+                    </ul>
+                </div>
+
+                <!-- Chiffrement RSA/AES -->
+                <div class="service-card" id="service-aes" onclick="openModal('chiffrementModal')">
+                    <div class="service-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                    </div>
+                    <h3>Chiffrement RSA/AES</h3>
+                    <p>Protection de vos données sensibles avec les algorithmes de chiffrement les plus robustes.</p>
+                    <ul class="feature-list">
+                        <li>RSA-4096 / AES-256</li>
+                        <li>Échange sécurisé</li>
+                        <li>Clés managées</li>
+                    </ul>
+                </div>
+
+                <!-- Certificats Numériques -->
+                <div class="service-card" id="service-certs" onclick="openModal('certificatModal')">
+                    <div class="service-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="M9 12l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <h3>Certificats Numériques</h3>
+                    <p>Émission et gestion de certificats X.509 pour l'authentification et la signature.</p>
+                    <ul class="feature-list">
+                        <li>PKI complète</li>
+                        <li>Révocation temps réel</li>
+                        <li>HSM sécurisé</li>
+                    </ul>
+                </div>
+
+                <!-- Coffre-Fort Numérique -->
+                <div class="service-card" id="service-vault">
+                    <div class="service-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2z"/>
+                            <circle cx="12" cy="12" r="3"/><path d="M12 9v-2"/><path d="M12 17v-2"/>
+                        </svg>
+                    </div>
+                    <h3>Coffre-Fort Numérique</h3>
+                    <p>Stockage sécurisé et certifié de vos documents avec accès contrôlé.</p>
+                    <ul class="feature-list">
+                        <li>Chiffrement bout-en-bout</li>
+                        <li>Archivage légal</li>
+                        <li>Accès multi-niveaux</li>
+                    </ul>
+                </div>
+
+                <!-- Horodatage -->
+                <div class="service-card" id="service-timestamp">
+                    <div class="service-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <h3>Horodatage Qualifié</h3>
+                    <p>Preuve d'existence et d'intégrité de vos documents à un instant précis.</p>
+                    <ul class="feature-list">
+                        <li>Autorité certifiée</li>
+                        <li>Preuve légale</li>
+                        <li>API temps réel</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="section-container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number mono">10M+</div>
+                    <div class="stat-label">Documents signés</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number mono">99.9%</div>
+                    <div class="stat-label">Disponibilité</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number mono">500+</div>
+                    <div class="stat-label">Entreprises clientes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number mono">24/7</div>
+                    <div class="stat-label">Support expert</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="hero-glow hero-glow-1"></div>
+        <div class="cta-content">
+            <h2>Prêt à sécuriser vos <span class="gradient-text">échanges numériques</span> ?</h2>
+            <p>Rejoignez les entreprises qui font confiance à TrustGuard pour leur transformation numérique sécurisée.</p>
+            
+            <div class="cta-buttons">
+                <a href="/app" class="btn btn-primary">
+                    Accéder à l'application
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="#" onclick="openModal('contactModal'); return false;" class="btn btn-outline">Nous contacter</a>
+            </div>
+            
+            <div class="trust-badges">
+                <div class="trust-badge">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                    ISO 27001
+                </div>
+                <div class="trust-badge">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                    RGPD
+                </div>
+                <div class="trust-badge">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                    eIDAS
+                </div>
+                <div class="trust-badge">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                    RGS
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="/" class="logo">
+                        <div class="logo-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </div>
+                        <span class="logo-text">TrustGuard</span>
+                    </a>
+                    <p>Leader français des services de confiance numérique. Sécurisez vos échanges avec nos solutions certifiées.</p>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Solutions</h4>
+                    <ul>
+                        <li><a href="#" onclick="openModal('signatureModal'); return false;">Signature électronique</a></li>
+                        <li><a href="#">Certificats numériques</a></li>
+                        <li><a href="#" onclick="openModal('chiffrementModal'); return false;">Chiffrement</a></li>
+                        <li><a href="#" onclick="openModal('qrModal'); return false;">QR codes sécurisés</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Entreprise</h4>
+                    <ul>
+                        <li><a href="#">À propos</a></li>
+                        <li><a href="#">Carrières</a></li>
+                        <li><a href="#">Presse</a></li>
+                        <li><a href="#">Partenaires</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Ressources</h4>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">API</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Support</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Légal</h4>
+                    <ul>
+                        <li><a href="#">Confidentialité</a></li>
+                        <li><a href="#">CGU</a></li>
+                        <li><a href="#">Mentions légales</a></li>
+                        <li><a href="#">Cookies</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>© 2024 TrustGuard. Tous droits réservés.</p>
+                <p>Hébergé en France 🇫🇷 | Certifié ISO 27001</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <!-- QR Modal -->
+    <div id="qrModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📱 QR Code Securise</h2>
+                <button class="modal-close" onclick="closeModal('qrModal')">✕</button>
+            </div>
+            <div id="qrAlert" class="alert"></div>
+            
+            <!-- Tab selection -->
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid #ddd;">
+                <button class="tab-btn" onclick="switchQRTab('text', event)" style="flex: 1; padding: 0.75rem; border: none; background: none; cursor: pointer; border-bottom: 3px solid #667eea; color: #667eea; font-weight: bold;">Texte</button>
+                <button class="tab-btn" onclick="switchQRTab('file', event)" style="flex: 1; padding: 0.75rem; border: none; background: none; cursor: pointer; color: #999;">Fichier</button>
+            </div>
+            
+            <!-- Text Tab -->
+            <div id="qrTextTab" class="form-group">
+                <label>Texte a encoder en QR Code</label>
+                <textarea id="qrText" placeholder="Entrez le texte ou data a encoder" rows="4"></textarea>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button class="btn btn-primary" onclick="generateQR()" style="flex: 1;">Generer QR</button>
+                    <button class="btn btn-outline" onclick="generateSignedQR()" style="flex: 1;">QR Signe</button>
+                </div>
+            </div>
+            
+            <!-- File Tab -->
+            <div id="qrFileTab" class="form-group" style="display: none;">
+                <label>Fichier a encoder en QR Code</label>
+                <input type="file" id="qrFile" onchange="updateQRFileName()">
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button class="btn btn-primary" onclick="generateQRFile()" style="flex: 1;">Generer QR</button>
+                    <button class="btn btn-outline" onclick="generateSignedQRFile()" style="flex: 1;">QR Signe</button>
+                </div>
+            </div>
+            
+            <div id="qrResult" style="margin-top: 1.5rem; text-align: center; display: none;">
+                <img id="qrImage" src="" alt="QR Code" style="max-width: 200px; border-radius: 0.5rem;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Certificate Modal -->
+    <div id="certificatModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🧾 Generer Certificat</h2>
+                <button class="modal-close" onclick="closeModal('certificatModal')">X</button>
+            </div>
+            <div id="certAlert" class="alert"></div>
+            
+            <div class="form-group">
+                <label>Common Name (CN) *</label>
+                <input type="text" id="modalCertCN" placeholder="ex: example.local" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Organisation (optionnel)</label>
+                <input type="text" id="modalCertOrg" placeholder="ex: MyCompany">
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>Validite (jours)</label>
+                    <input type="number" id="modalCertDays" placeholder="365" value="365">
+                </div>
+                <div class="form-group">
+                    <label>Taille cle (bits)</label>
+                    <input type="number" id="modalCertKeySize" placeholder="2048" value="2048">
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="generateCertFromModal()" style="width: 100%;">Generer</button>
+            
+            <div id="certResultModal" style="margin-top: 1.5rem; padding: 1rem; background: #f5f5f5; border-radius: 0.5rem; display: none;">
+                <p id="certResultText" style="margin: 0;"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chiffrement Modal -->
+    <div id="chiffrementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔒 Chiffrement RSA/AES</h2>
+                <button class="modal-close" onclick="closeModal('chiffrementModal')">✕</button>
+            </div>
+            <div id="chiffAlert" class="alert"></div>
+            <div style="margin-bottom: 1rem;">
+                <button class="btn btn-primary" onclick="switchTab('aes')" style="margin-bottom: 1rem;">AES-256 (fichiers volumineux)</button>
+                <button class="btn btn-outline" onclick="switchTab('rsa')">RSA-2048 (texte court)</button>
+            </div>
+            <div id="aesTab" style="display: block;">
+                <div class="form-group">
+                    <label>Fichier à chiffrer</label>
+                    <input type="file" id="aesFile" onchange="updateFileName('aes')">
+                </div>
+                <div class="form-group">
+                    <label>Mot de passe</label>
+                    <input type="password" id="aesPassword" placeholder="Entrez un mot de passe sécurisé">
+                </div>
+                <button class="btn btn-primary" onclick="encryptAES()" style="width: 100%;">Chiffrer AES-256</button>
+            </div>
+            <div id="rsaTab" style="display: none;">
+                <div class="form-group">
+                    <label>Fichier (max 200 bytes)</label>
+                    <input type="file" id="rsaFile" onchange="updateFileName('rsa')">
+                </div>
+                <button class="btn btn-primary" onclick="encryptRSA()" style="width: 100%;">Chiffrer RSA-2048</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signature Modal -->
+    <div id="signatureModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✍️ Signature Électronique</h2>
+                <button class="modal-close" onclick="closeModal('signatureModal')">✕</button>
+            </div>
+            <div id="signAlert" class="alert"></div>
+            <div class="form-group">
+                <label>Fichier à signer</label>
+                <input type="file" id="signFile" onchange="updateFileName('sign')">
+            </div>
+            <button class="btn btn-primary" onclick="signFile()" style="width: 100%;">Signer le fichier</button>
+            <div id="signResult" style="margin-top: 1rem; display: none;">
+                <p style="color: hsl(var(--muted-foreground)); font-size: 0.875rem;">Signature créée avec succès!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📧 Nous Contacter</h2>
+                <button class="modal-close" onclick="closeModal('contactModal')">✕</button>
+            </div>
+            <div id="contactAlert" class="alert"></div>
+            <div class="form-group">
+                <label>Nom</label>
+                <input type="text" id="contactName" placeholder="Votre nom">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="contactEmail" placeholder="votre.email@example.com">
+            </div>
+            <div class="form-group">
+                <label>Message</label>
+                <textarea id="contactMessage" placeholder="Votre message..." rows="4"></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="sendContact()" style="width: 100%;">Envoyer</button>
+        </div>
+    </div>
+
+    <script>
+        // Modal Functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+
+        // Tab Switching
+        function switchTab(tab) {
+            document.getElementById('aesTab').style.display = tab === 'aes' ? 'block' : 'none';
+            document.getElementById('rsaTab').style.display = tab === 'rsa' ? 'block' : 'none';
+        }
+
+        // Alert Functions
+        function showAlert(elementId, message, type) {
+            const alert = document.getElementById(elementId);
+            alert.textContent = message;
+            alert.className = `alert ${type} show`;
+            setTimeout(() => alert.classList.remove('show'), 5000);
+        }
+
+        // QR Code Tab switching
+        function switchQRTab(tab, event) {
+            event.preventDefault();
+            
+            // Hide all tabs
+            document.getElementById('qrTextTab').style.display = 'none';
+            document.getElementById('qrFileTab').style.display = 'none';
+            
+            // Reset tab button styles
+            const buttons = event.target.parentElement.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => {
+                btn.style.borderBottom = 'none';
+                btn.style.color = '#999';
+                btn.style.fontWeight = 'normal';
+            });
+            
+            // Show selected tab
+            if (tab === 'text') {
+                document.getElementById('qrTextTab').style.display = 'block';
+            } else {
+                document.getElementById('qrFileTab').style.display = 'block';
+            }
+            
+            // Style active tab button
+            event.target.style.borderBottom = '3px solid #667eea';
+            event.target.style.color = '#667eea';
+            event.target.style.fontWeight = 'bold';
+        }
+
+        // QR Code Functions
+        async function generateQR() {
+            const text = document.getElementById('qrText').value;
+            if (!text) {
+                showAlert('qrAlert', 'Veuillez entrer un texte', 'error');
+                return;
+            }
+
+            const fd = new FormData();
+            fd.append('text', text);
+
+            try {
+                const response = await fetch('/api/qr/simple', { method: 'POST', body: fd });
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                document.getElementById('qrImage').src = url;
+                document.getElementById('qrResult').style.display = 'block';
+                showAlert('qrAlert', '[OK] QR Code genere avec succes!', 'success');
+            } catch (err) {
+                showAlert('qrAlert', 'Erreur: ' + err.message, 'error');
+            }
+        }
+
+        async function generateSignedQR() {
+            const text = document.getElementById('qrText').value;
+            if (!text) {
+                showAlert('qrAlert', 'Veuillez entrer un texte', 'error');
+                return;
+            }
+
+            const fd = new FormData();
+            fd.append('text', text);
+
+            try {
+                const response = await fetch('/api/qr/signed', { method: 'POST', body: fd });
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                document.getElementById('qrImage').src = url;
+                document.getElementById('qrResult').style.display = 'block';
+                showAlert('qrAlert', '[OK] QR Code signe genere!', 'success');
+            } catch (err) {
+                showAlert('qrAlert', 'Erreur: ' + err.message, 'error');
+            }
+        }
+
+        // File QR Code Functions
+        function updateQRFileName() {
+            const file = document.getElementById('qrFile').files[0];
+            if (file) {
+                console.log('Fichier selectione: ' + file.name + ' (' + (file.size / 1024).toFixed(2) + ' KB)');
+            }
+        }
+
+        async function generateQRFile() {
+            const file = document.getElementById('qrFile').files[0];
+            if (!file) {
+                showAlert('qrAlert', 'Selectionnez un fichier', 'error');
+                return;
+            }
+
+            const fd = new FormData();
+            fd.append('file', file);
+            fd.append('mode', 'content');
+
+            try {
+                const response = await fetch('/qr/file', { method: 'POST', body: fd });
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                document.getElementById('qrImage').src = url;
+                document.getElementById('qrResult').style.display = 'block';
+                showAlert('qrAlert', '[OK] QR Code du fichier genere!', 'success');
+            } catch (err) {
+                showAlert('qrAlert', 'Erreur: ' + err.message, 'error');
+            }
+        }
+
+        async function generateSignedQRFile() {
+            const file = document.getElementById('qrFile').files[0];
+            if (!file) {
+                showAlert('qrAlert', 'Selectionnez un fichier', 'error');
+                return;
+            }
+
+            const fd = new FormData();
+            fd.append('file', file);
+            fd.append('mode', 'signed');
+
+            try {
+                const response = await fetch('/qr/file', { method: 'POST', body: fd });
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                document.getElementById('qrImage').src = url;
+                document.getElementById('qrResult').style.display = 'block';
+                showAlert('qrAlert', '[OK] QR Code signe du fichier genere!', 'success');
+            } catch (err) {
+                showAlert('qrAlert', 'Erreur: ' + err.message, 'error');
+            }
+        }
+
+        // Certificate Functions
+        async function generateCertFromModal() {
+            const cn = document.getElementById('modalCertCN').value.trim();
+            const org = document.getElementById('modalCertOrg').value.trim();
+            const days = document.getElementById('modalCertDays').value.trim();
+            const keySize = document.getElementById('modalCertKeySize').value.trim();
+
+            // Clear previous alerts
+            showAlert('certAlert', '', 'info');
+
+            if (!cn) {
+                showAlert('certAlert', '[ERROR] Le Common Name (CN) est requis', 'error');
+                return;
+            }
+
+            try {
+                const fd = new FormData();
+                fd.append('cn', cn);
+                if (org) fd.append('organization', org);
+                if (days) fd.append('days', days);
+                if (keySize) fd.append('key_size', keySize);
+
+                const response = await fetch('/api/certs/generate', { method: 'POST', body: fd });
+                const data = await response.json();
+
+                if (data.error) {
+                    showAlert('certAlert', '[ERROR] ' + data.error, 'error');
+                    return;
+                }
+
+                showAlert('certAlert', '[OK] Certificat genere avec succes!', 'success');
+                
+                const resultText = `
+                    Certificat: ${data.cert}
+                    Cle privee: ${data.key}
+                    
+                    Downloads:
+                    - Certificat: <a href="${data.download_cert}">Telecharger</a>
+                    - Cle privee: <a href="${data.download_key}">Telecharger</a>
+                `;
+                
+                document.getElementById('certResultText').innerHTML = resultText;
+                document.getElementById('certResultModal').style.display = 'block';
+
+                // Clear form
+                document.getElementById('modalCertCN').value = '';
+                document.getElementById('modalCertOrg').value = '';
+                document.getElementById('modalCertDays').value = '365';
+                document.getElementById('modalCertKeySize').value = '2048';
+
+            } catch (err) {
+                showAlert('certAlert', '[ERROR] ' + err.message, 'error');
+            }
+        }
+
+        // Chiffrement Functions
+        async function encryptAES() {
+            const file = document.getElementById('aesFile').files[0];
+            const password = document.getElementById('aesPassword').value;
+
+            if (!file) {
+                showAlert('chiffAlert', 'Sélectionnez un fichier', 'error');
+                return;
+            }
+            if (!password) {
+                showAlert('chiffAlert', 'Entrez un mot de passe', 'error');
+                return;
+            }
+
+            const fd = new FormData();
+            fd.append('file', file);
+            fd.append('password', password);
+
+            try {
+                const response = await fetch('/api/aes/encrypt', { method: 'POST', body: fd });
+                const data = await response.json();
+                if (data.download) {
+                    showAlert('chiffAlert', '✓ Fichier chiffré! Téléchargement...', 'success');
+                    window.location.href = data.download;
+                }
+            } catch (err) {
+                showAlert('chiffAlert', 'Erreur: ' + err.message, 'error');
+            }
+        }
+
+        async function encryptRSA() {
+            const file = document.getElementById('rsaFile').files[0];
+            if (!file) {
+                showAlert('chiffAlert', 'Sélectionnez un fichier', 'error');
+                return;
+            }
+            if (file.size > 200) {
+                showAlert('chiffAlert', 'Fichier trop volumineux (max 200 bytes)', 'error');
+                return;
+            }
+
+            const fd = new FormData();
+            fd.append('file', file);
+
+            try {
+                const response = await fetch('/api/rsa/encrypt', { method: 'POST', body: fd });
+                const data = await response.json();
+                if (data.download) {
+                    showAlert('chiffAlert', '✓ Fichier chiffré! Téléchargement...', 'success');
+                    window.location.href = data.download;
+                }
+            } catch (err) {
+                showAlert('chiffAlert', 'Erreur: ' + err.message, 'error');
+            }
+        }
+
+        // Signature Function
+        async function signFile() {
+            const file = document.getElementById('signFile').files[0];
+            if (!file) {
+                showAlert('signAlert', 'Sélectionnez un fichier', 'error');
+                return;
+            }
+
+            const fd = new FormData();
+            fd.append('file', file);
+
+            try {
+                const response = await fetch('/api/rsa/sign', { method: 'POST', body: fd });
+                const data = await response.json();
+                if (data.download) {
+                    showAlert('signAlert', '✓ Fichier signé! Téléchargement...', 'success');
+                    window.location.href = data.download;
+                }
+            } catch (err) {
+                showAlert('signAlert', 'Erreur: ' + err.message, 'error');
+            }
+        }
+
+        // Contact Function
+        async function sendContact() {
+            const name = document.getElementById('contactName').value;
+            const email = document.getElementById('contactEmail').value;
+            const message = document.getElementById('contactMessage').value;
+
+            if (!name || !email || !message) {
+                showAlert('contactAlert', 'Veuillez remplir tous les champs', 'error');
+                return;
+            }
+
+            showAlert('contactAlert', '✓ Message envoyé avec succès!', 'success');
+            setTimeout(() => closeModal('contactModal'), 2000);
+        }
+
+        // Update file name display
+        function updateFileName(type) {
+            const fileId = type === 'aes' ? 'aesFile' : type === 'rsa' ? 'rsaFile' : 'signFile';
+            const file = document.getElementById(fileId).files[0];
+            if (file) {
+                console.log(`Fichier sélectionné: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`);
+            }
+        }
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#' && !href.includes('Modal')) {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+
+        // Show services modal
+        function showServices(e) {
+            e.preventDefault();
+            const modal = document.getElementById('servicesModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        // Close services modal
+        function closeServicesModal() {
+            const modal = document.getElementById('servicesModal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('servicesModal');
+            if (e.target === modal) {
+                closeServicesModal();
+            }
+        });
+
+        // Navigate to URL and close modal
+        function navigateTo(anchorId) {
+            closeServicesModal();
+            // Map RSA to AES since they're on the same card
+            if (anchorId === 'service-rsa') {
+                anchorId = 'service-aes';
+            }
+            const target = document.getElementById(anchorId);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    </script>
+
+    <!-- Services Modal -->
+    <div id="servicesModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; border-radius: 15px; padding: 40px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; position: relative;">
+            <button onclick="closeServicesModal()" style="position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">×</button>
+            
+            <h2 style="color: #667eea; margin-bottom: 30px; margin-top: 0;">Sélectionnez un service</h2>
+            
+            <div style="display: grid; gap: 20px;">
+                <!-- AES Encryption -->
+                <div onclick="navigateTo('service-aes');" style="padding: 20px; border: 2px solid #667eea; border-radius: 10px; cursor: pointer; transition: all 0.3s; background: #f8f9ff;">
+                    <h3 style="color: #667eea; margin: 0 0 10px 0;">🔒 Chiffrement AES-256</h3>
+                    <p style="margin: 0; color: #666; font-size: 14px;">Chiffrez vos fichiers avec une cle robuste</p>
+                </div>
+                
+                <!-- RSA Encryption -->
+                <div onclick="navigateTo('service-rsa');" style="padding: 20px; border: 2px solid #764ba2; border-radius: 10px; cursor: pointer; transition: all 0.3s; background: #faf8ff;">
+                    <h3 style="color: #764ba2; margin: 0 0 10px 0;">🔐 Chiffrement RSA-2048</h3>
+                    <p style="margin: 0; color: #666; font-size: 14px;">Chiffrement asymetrique haute securite</p>
+                </div>
+                
+                <!-- Signature -->
+                <div onclick="navigateTo('service-signature');" style="padding: 20px; border: 2px solid #667eea; border-radius: 10px; cursor: pointer; transition: all 0.3s; background: #f8f9ff;">
+                    <h3 style="color: #667eea; margin: 0 0 10px 0;">✍️ Signature Electronique</h3>
+                    <p style="margin: 0; color: #666; font-size: 14px;">Signez vos documents de maniere authentifiee</p>
+                </div>
+                
+                <!-- QR Codes -->
+                <div onclick="navigateTo('service-qr');" style="padding: 20px; border: 2px solid #764ba2; border-radius: 10px; cursor: pointer; transition: all 0.3s; background: #faf8ff;">
+                    <h3 style="color: #764ba2; margin: 0 0 10px 0;">📱 Codes QR Securises</h3>
+                    <p style="margin: 0; color: #666; font-size: 14px;">Generez des codes QR chiffres et signes</p>
+                </div>
+                
+                <!-- Certificates -->
+                <div onclick="navigateTo('service-certs');" style="padding: 20px; border: 2px solid #667eea; border-radius: 10px; cursor: pointer; transition: all 0.3s; background: #f8f9ff;">
+                    <h3 style="color: #667eea; margin: 0 0 10px 0;">🧾 Certificats Numeriques</h3>
+                    <p style="margin: 0; color: #666; font-size: 14px;">Creez et gerez vos certificats X.509</p>
+                </div>
+            </div>
+            
+            <p style="text-align: center; color: #999; font-size: 12px; margin-top: 30px; margin-bottom: 0;">Cliquez sur un service pour commencer</p>
+        </div>
+    </div>
+
+</body>
+</html>
+
+    

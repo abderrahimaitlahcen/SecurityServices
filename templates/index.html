@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Service - Chiffrement Sécurisé</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.4);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.95em;
+        }
+
+        input[type="file"],
+        input[type="password"],
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input[type="file"],
+        input[type="password"],
+        input[type="text"],
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            min-width: 150px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+            display: block;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #f5c6cb;
+            display: block;
+        }
+
+        .alert.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #bee5eb;
+            display: block;
+        }
+
+        .result-box {
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            font-size: 0.9em;
+        }
+
+        .result-box.active {
+            display: block;
+        }
+
+        .file-drop {
+            border: 3px dashed #667eea;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-drop:hover,
+        .file-drop.dragover {
+            background: #f0f0ff;
+            border-color: #764ba2;
+        }
+
+        .file-drop p {
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .qr-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #qrImage {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-top: 10px;
+        }
+
+        .download-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 24px;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .download-link:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            button {
+                min-width: 120px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🔐 Crypto Service</h1>
+        <p>Chiffrement sécurisé avec RSA, AES et Signature Numérique</p>
+    </div>
+
+    <!-- Onglets -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('aes', event)">🔒 Chiffrement AES</button>
+        <button class="tab-btn" onclick="switchTab('rsa', event)">🔑 Chiffrement RSA</button>
+        <button class="tab-btn" onclick="switchTab('signature', event)">✍️ Signature RSA</button>
+        <button class="tab-btn" onclick="switchTab('qr', event)">📱 QR Code</button>
+        <button class="tab-btn" onclick="switchTab('certs', event)">🧾 Certificats</button>
+    </div>
+
+    <!-- TAB: AES -->
+    <div id="aes" class="tab-content active">
+        <div class="card">
+            <h2>🔒 Chiffrement AES-256</h2>
+            <div id="alertAES" class="alert"></div>
+
+            <div class="form-group">
+                <label for="aesFile">Choisir un fichier à chiffrer :</label>
+                <div class="file-drop" id="aesDropZone">
+                    <input type="file" id="aesFile" style="display: none;">
+                    <p>📁 Glissez-déposez votre fichier ici<br>ou cliquez pour sélectionner</p>
+                </div>
+                <span id="aesFileName" style="margin-top: 10px; display: block; color: #667eea;"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="aesPassword">Mot de passe de chiffrement :</label>
+                <input type="password" id="aesPassword" placeholder="Entrez un mot de passe sécurisé">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="encryptAES()">Chiffrer le fichier</button>
+                <button class="btn-secondary" onclick="resetAES()">Réinitialiser</button>
+            </div>
+
+            <div id="aesResult" class="result-box"></div>
+            <div id="aesDownload"></div>
+        </div>
+    </div>
+
+    <!-- TAB: RSA -->
+    <div id="rsa" class="tab-content">
+        <div class="card">
+            <h2>🔑 Chiffrement RSA-2048</h2>
+            <div id="alertRSA" class="alert"></div>
+
+            <div class="form-group">
+                <label for="rsaFile">Choisir un fichier à chiffrer :</label>
+                <div class="file-drop" id="rsaDropZone">
+                    <input type="file" id="rsaFile" style="display: none;">
+                    <p>📁 Glissez-déposez votre fichier ici<br>ou cliquez pour sélectionner</p>
+                </div>
+                <span id="rsaFileName" style="margin-top: 10px; display: block; color: #667eea;"></span>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="encryptRSA()">Chiffrer le fichier</button>
+                <button class="btn-secondary" onclick="resetRSA()">Réinitialiser</button>
+            </div>
+
+            <div id="rsaResult" class="result-box"></div>
+            <div id="rsaDownload"></div>
+        </div>
+    </div>
+
+    <!-- TAB: SIGNATURE -->
+    <div id="signature" class="tab-content">
+        <div class="card">
+            <h2>✍️ Signature Numérique RSA</h2>
+            <div id="alertSignature" class="alert"></div>
+
+            <div class="form-group">
+                <label for="signFile">Choisir un fichier à signer :</label>
+                <div class="file-drop" id="signDropZone">
+                    <input type="file" id="signFile" style="display: none;">
+                    <p>📁 Glissez-déposez votre fichier ici<br>ou cliquez pour sélectionner</p>
+                </div>
+                <span id="signFileName" style="margin-top: 10px; display: block; color: #667eea;"></span>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="signFile()">Signer le fichier</button>
+                <button class="btn-secondary" onclick="resetSignature()">Réinitialiser</button>
+            </div>
+
+            <div id="signResult" class="result-box"></div>
+            <div id="signDownload"></div>
+        </div>
+    </div>
+
+    <!-- TAB: QR CODE -->
+    <div id="qr" class="tab-content">
+        <div class="card">
+            <h2>📱 Génération de QR Code</h2>
+            <div id="alertQR" class="alert"></div>
+
+            <div class="form-group">
+                <label for="qrText">Texte à encoder en QR Code :</label>
+                <textarea id="qrText" placeholder="Entrez le texte ou data à encoder" rows="5"></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="generateQR()">Générer QR Code</button>
+                <button class="btn-primary" onclick="generateSignedQR()">QR Code Signé</button>
+                <button class="btn-secondary" onclick="resetQR()">Réinitialiser</button>
+            </div>
+
+            <div class="qr-container">
+                <img id="qrImage" src="" alt="QR Code" style="display: none;">
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: CERTIFICATS -->
+    <div id="certs" class="tab-content">
+        <div class="card">
+            <h2>🧾 Gestion des Certificats</h2>
+            <div id="alertCerts" class="alert"></div>
+
+            <div class="form-group">
+                <label for="certCN">Common Name (CN) :</label>
+                <input type="text" id="certCN" placeholder="ex: example.local">
+            </div>
+
+            <div class="form-group">
+                <label for="certOrg">Organization (optionnel) :</label>
+                <input type="text" id="certOrg" placeholder="ex: MyOrg">
+            </div>
+
+            <div class="form-group">
+                <label for="certDays">Validité (jours) :</label>
+                <input type="text" id="certDays" placeholder="365">
+            </div>
+
+            <div class="form-group">
+                <label for="certKeySize">Taille de la clé (bits) :</label>
+                <input type="text" id="certKeySize" placeholder="2048">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="generateCert()">Générer certificat</button>
+                <button class="btn-secondary" onclick="listCerts()">Rafraîchir la liste</button>
+            </div>
+
+            <div id="certResult" class="result-box"></div>
+
+            <div class="card" style="margin-top:20px;">
+                <h3 style="color:#667eea;">Certificats disponibles</h3>
+                <div id="certList" style="margin-top:10px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ======================== GESTION DES ONGLETS ========================
+function switchTab(tabName, event) {
+    // Masquer tous les onglets
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(tab => tab.classList.remove('active'));
+
+    // Désactiver tous les boutons d'onglets
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(btn => btn.classList.remove('active'));
+
+    // Afficher l'onglet sélectionné
+    document.getElementById(tabName).classList.add('active');
+    event.target.classList.add('active');
+    // Si on ouvre l'onglet certificats, rafraîchir la liste
+    try {
+        if (tabName === 'certs') {
+            const list = document.getElementById('certList');
+            if (list) list.innerHTML = 'Chargement des certificats...';
+            listCerts();
+        }
+    } catch (e) {
+        console.error('Erreur lors du switch vers certs:', e);
+    }
+}
+
+// ======================== UTILITAIRES ========================
+function showAlert(elementId, message, type = 'info') {
+    const alert = document.getElementById(elementId);
+    alert.className = `alert ${type}`;
+    alert.innerText = message;
+}
+
+function hideAlert(elementId) {
+    const alert = document.getElementById(elementId);
+    alert.className = 'alert';
+    alert.innerText = '';
+}
+
+function showLoading(elementId) {
+    const elem = document.getElementById(elementId);
+    elem.innerHTML = '<div class="status"><div class="spinner"></div> Traitement en cours...</div>';
+    elem.classList.add('active');
+}
+
+// Drag and drop pour fichiers
+function setupFileDrop(dropZoneId, fileInputId, fileNameId) {
+    const dropZone = document.getElementById(dropZoneId);
+    const fileInput = document.getElementById(fileInputId);
+    const fileName = document.getElementById(fileNameId);
+
+    // Click to upload
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    // File input change
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files[0]) {
+            fileName.innerText = `✅ Fichier sélectionné: ${e.target.files[0].name}`;
+        }
+    });
+
+    // Drag and drop
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files[0]) {
+            fileInput.files = e.dataTransfer.files;
+            fileName.innerText = `✅ Fichier sélectionné: ${e.dataTransfer.files[0].name}`;
+        }
+    });
+}
+
+// Initialiser drag and drop
+setupFileDrop('aesDropZone', 'aesFile', 'aesFileName');
+setupFileDrop('rsaDropZone', 'rsaFile', 'rsaFileName');
+setupFileDrop('signDropZone', 'signFile', 'signFileName');
+
+// ======================== AES ENCRYPTION ========================
+function encryptAES() {
+    const file = document.getElementById("aesFile").files[0];
+    const password = document.getElementById("aesPassword").value;
+
+    hideAlert('alertAES');
+
+    if (!file) {
+        showAlert('alertAES', '❌ Veuillez sélectionner un fichier', 'error');
+        return;
+    }
+    if (!password) {
+        showAlert('alertAES', '❌ Veuillez entrer un mot de passe', 'error');
+        return;
+    }
+
+    showLoading('aesResult');
+
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("password", password);
+
+    fetch("/api/aes/encrypt", { method: "POST", body: fd })
+        .then(r => r.json())
+        .then(d => {
+            if(d.error) {
+                showAlert('alertAES', '❌ Erreur: ' + d.error, 'error');
+                document.getElementById('aesResult').classList.remove('active');
+            } else {
+                showAlert('alertAES', '✅ Chiffrement AES réussi!', 'success');
+                document.getElementById('aesResult').innerText = 
+                    `🔐 Fichier chiffré\n` +
+                    `Nom: ${d.file}\n` +
+                    `Algorithme: ${d.algorithm}\n\n` +
+                    `Le fichier a été sauvegardé sur le serveur.`;
+                document.getElementById('aesResult').classList.add('active');
+
+                document.getElementById('aesDownload').innerHTML = 
+                    `<a href="${d.download}" class="download-link" download>⬇️ Télécharger le fichier chiffré</a>`;
+            }
+        })
+        .catch(err => {
+            showAlert('alertAES', '❌ Erreur réseau: ' + err.message, 'error');
+            document.getElementById('aesResult').classList.remove('active');
+        });
+}
+
+function resetAES() {
+    document.getElementById('aesFile').value = '';
+    document.getElementById('aesPassword').value = '';
+    document.getElementById('aesFileName').innerText = '';
+    document.getElementById('aesResult').classList.remove('active');
+    document.getElementById('aesDownload').innerHTML = '';
+    hideAlert('alertAES');
+}
+
+// ======================== RSA ENCRYPTION ========================
+function encryptRSA() {
+    const file = document.getElementById("rsaFile").files[0];
+
+    hideAlert('alertRSA');
+
+    if (!file) {
+        showAlert('alertRSA', '❌ Veuillez sélectionner un fichier', 'error');
+        return;
+    }
+
+    // RSA a une limite de taille
+    if (file.size > 200) {
+        showAlert('alertRSA', '⚠️ Fichier trop volumineux pour RSA (max ~200 bytes). Utilisez AES à la place.', 'error');
+        return;
+    }
+
+    showLoading('rsaResult');
+
+    const fd = new FormData();
+    fd.append("file", file);
+
+    fetch("/api/rsa/encrypt", { method: "POST", body: fd })
+        .then(r => r.json())
+        .then(d => {
+            if(d.error) {
+                showAlert('alertRSA', '❌ Erreur: ' + d.error, 'error');
+                document.getElementById('rsaResult').classList.remove('active');
+            } else {
+                showAlert('alertRSA', '✅ Chiffrement RSA réussi!', 'success');
+                document.getElementById('rsaResult').innerText = 
+                    `🔑 Fichier chiffré avec RSA-2048\n` +
+                    `Nom: ${d.file}\n` +
+                    `Algorithme: ${d.algorithm}\n\n` +
+                    `Hash (hex): ${d.encrypted.substring(0, 100)}...`;
+                document.getElementById('rsaResult').classList.add('active');
+
+                document.getElementById('rsaDownload').innerHTML = 
+                    `<a href="${d.download}" class="download-link" download>⬇️ Télécharger le fichier chiffré</a>`;
+            }
+        })
+        .catch(err => {
+            showAlert('alertRSA', '❌ Erreur réseau: ' + err.message, 'error');
+            document.getElementById('rsaResult').classList.remove('active');
+        });
+}
+
+function resetRSA() {
+    document.getElementById('rsaFile').value = '';
+    document.getElementById('rsaFileName').innerText = '';
+    document.getElementById('rsaResult').classList.remove('active');
+    document.getElementById('rsaDownload').innerHTML = '';
+    hideAlert('alertRSA');
+}
+
+// ======================== SIGNATURE ========================
+function signFile() {
+    const file = document.getElementById("signFile").files[0];
+
+    hideAlert('alertSignature');
+
+    if (!file) {
+        showAlert('alertSignature', '❌ Veuillez sélectionner un fichier', 'error');
+        return;
+    }
+
+    showLoading('signResult');
+
+    const fd = new FormData();
+    fd.append("file", file);
+
+    fetch("/api/rsa/sign", { method: "POST", body: fd })
+        .then(r => r.json())
+        .then(d => {
+            if(d.error) {
+                showAlert('alertSignature', '❌ Erreur: ' + d.error, 'error');
+                document.getElementById('signResult').classList.remove('active');
+            } else {
+                showAlert('alertSignature', '✅ Signature créée avec succès!', 'success');
+                document.getElementById('signResult').innerText = 
+                    `✍️ Fichier signé numériquement\n` +
+                    `Fichier: ${d.file}\n` +
+                    `Signature (hex): ${d.signature.substring(0, 100)}...\n\n` +
+                    `La signature a été générée avec votre clé privée.`;
+                document.getElementById('signResult').classList.add('active');
+
+                document.getElementById('signDownload').innerHTML = 
+                    `<a href="${d.download}" class="download-link" download>⬇️ Télécharger la signature</a>`;
+            }
+        })
+        .catch(err => {
+            showAlert('alertSignature', '❌ Erreur réseau: ' + err.message, 'error');
+            document.getElementById('signResult').classList.remove('active');
+        });
+}
+
+function resetSignature() {
+    document.getElementById('signFile').value = '';
+    document.getElementById('signFileName').innerText = '';
+    document.getElementById('signResult').classList.remove('active');
+    document.getElementById('signDownload').innerHTML = '';
+    hideAlert('alertSignature');
+}
+
+// ======================== QR CODE ========================
+function generateQR() {
+    const text = document.getElementById("qrText").value;
+
+    hideAlert('alertQR');
+
+    if (!text) {
+        showAlert('alertQR', '❌ Veuillez entrer un texte', 'error');
+        return;
+    }
+
+    document.getElementById('qrImage').style.display = 'block';
+    document.getElementById('qrImage').src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg"%3E%3Crect fill="%23f0f0f0" width="200" height="200"/%3E%3C/svg%3E';
+
+    const fd = new FormData();
+    fd.append("text", text);
+
+    fetch("/api/qr/simple", { method: "POST", body: fd })
+        .then(r => r.blob())
+        .then(blob => {
+            const url = URL.createObjectURL(blob);
+            document.getElementById('qrImage').src = url;
+            showAlert('alertQR', '✅ QR Code généré avec succès!', 'success');
+        })
+        .catch(err => {
+            showAlert('alertQR', '❌ Erreur: ' + err.message, 'error');
+            document.getElementById('qrImage').style.display = 'none';
+        });
+}
+
+function generateSignedQR() {
+    const text = document.getElementById("qrText").value;
+
+    hideAlert('alertQR');
+
+    if (!text) {
+        showAlert('alertQR', '❌ Veuillez entrer un texte', 'error');
+        return;
+    }
+
+    document.getElementById('qrImage').style.display = 'block';
+    document.getElementById('qrImage').src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg"%3E%3Crect fill="%23f0f0f0" width="200" height="200"/%3E%3C/svg%3E';
+
+    const fd = new FormData();
+    fd.append("text", text);
+
+    fetch("/api/qr/signed", { method: "POST", body: fd })
+        .then(r => r.blob())
+        .then(blob => {
+            const url = URL.createObjectURL(blob);
+            document.getElementById('qrImage').src = url;
+            showAlert('alertQR', '✅ QR Code signé généré avec succès!', 'success');
+        })
+        .catch(err => {
+            showAlert('alertQR', '❌ Erreur: ' + err.message, 'error');
+            document.getElementById('qrImage').style.display = 'none';
+        });
+}
+
+function resetQR() {
+    document.getElementById('qrText').value = '';
+    document.getElementById('qrImage').style.display = 'none';
+    document.getElementById('qrImage').src = '';
+    hideAlert('alertQR');
+}
+
+// ======================== CERTIFICATS ========================
+function generateCert() {
+    const cn = document.getElementById('certCN').value.trim();
+    const org = document.getElementById('certOrg').value.trim();
+    const days = document.getElementById('certDays').value.trim();
+    const keySize = document.getElementById('certKeySize').value.trim();
+
+    hideAlert('alertCerts');
+
+    if (!cn) {
+        showAlert('alertCerts', '[ERROR] Le Common Name (CN) est requis', 'error');
+        return;
+    }
+
+    const fd = new FormData();
+    fd.append('cn', cn);
+    if (org) fd.append('organization', org);
+    if (days) fd.append('days', days);
+    if (keySize) fd.append('key_size', keySize);
+
+    document.getElementById('certResult').classList.add('active');
+    document.getElementById('certResult').innerText = 'Generation en cours...';
+
+    fetch('/api/certs/generate', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(d => {
+            if (d.error) {
+                showAlert('alertCerts', '[ERROR] Erreur: ' + d.error, 'error');
+                document.getElementById('certResult').classList.remove('active');
+                return;
+            }
+
+            showAlert('alertCerts', '[OK] Certificat genere avec succes', 'success');
+            document.getElementById('certResult').innerText = `Certificat: ${d.cert}\nCle privee: ${d.key}`;
+
+            // Afficher liens de telechargement
+            const list = document.getElementById('certList');
+            const itemHtml = `<div style="margin-top:8px;">
+                <strong>${d.cert}</strong> &nbsp; <a class="download-link" href="${d.download_cert}">[DL] Certificat</a>
+                &nbsp; <a class="download-link" href="${d.download_key}">[DL] Cle privee</a>
+            </div>`;
+            list.insertAdjacentHTML('afterbegin', itemHtml);
+        })
+        .catch(err => {
+            showAlert('alertCerts', '[ERROR] Erreur reseau: ' + err.message, 'error');
+            document.getElementById('certResult').classList.remove('active');
+        });
+}
+
+function listCerts() {
+    hideAlert('alertCerts');
+    fetch('/api/certs/list')
+        .then(r => r.json())
+        .then(d => {
+            if (d.error) {
+                showAlert('alertCerts', '[ERROR] Erreur: ' + d.error, 'error');
+                return;
+            }
+
+            const list = document.getElementById('certList');
+            list.innerHTML = '';
+            if (!d.files || d.files.length === 0) {
+                list.innerHTML = '<div>Aucun certificat trouve.</div>';
+                return;
+            }
+
+            d.files.forEach(f => {
+                const url = `/download/keys/${encodeURIComponent(f)}`;
+                const el = `<div style="margin-top:8px;"><strong>${f}</strong> &nbsp; <a class="download-link" href="${url}">[DL] Telecharger</a></div>`;
+                list.insertAdjacentHTML('beforeend', el);
+            })
+        })
+        .catch(err => showAlert('alertCerts', '[ERROR] Erreur reseau: ' + err.message, 'error'));
+}
+
+// Charger la liste au démarrage
+document.addEventListener('DOMContentLoaded', () => {
+    try { listCerts(); } catch (e) { /* ignore */ }
+});
+</script>
+
+</body>
+</html>
