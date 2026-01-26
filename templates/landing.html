@@ -680,7 +680,6 @@
             </ul>
             <div class="nav-buttons">
                 <a href="/app" class="btn btn-outline">Utiliser l'app</a>
-                <a href="#" onclick="openModal('qrModal'); return false;" class="btn btn-primary">Commencer</a>
             </div>
         </div>
     </nav>
@@ -711,12 +710,6 @@
             </p>
             
             <div class="hero-buttons">
-                <button class="btn btn-primary" onclick="showServices(event)">
-                    Commencer maintenant
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </button>
                 <a href="#services" class="btn btn-outline">Voir les services</a>
             </div>
             
@@ -810,7 +803,7 @@
                 </div>
 
                 <!-- Coffre-Fort Numérique -->
-                <div class="service-card" id="service-vault">
+                <div class="service-card" id="service-vault" onclick="openModal('vaultModal')" style="cursor: pointer;">
                     <div class="service-icon">
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2z"/>
@@ -1132,6 +1125,92 @@
                 <textarea id="contactMessage" placeholder="Votre message..." rows="4"></textarea>
             </div>
             <button class="btn btn-primary" onclick="sendContact()" style="width: 100%;">Envoyer</button>
+        </div>
+    </div>
+
+    <!-- Coffre-Fort Modal -->
+    <div id="vaultModal" class="modal">
+        <div class="modal-content" style="width: 90%; max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2>🔐 Coffre-Fort Numérique</h2>
+                <button class="modal-close" onclick="closeModal('vaultModal')">✕</button>
+            </div>
+            <div id="vaultAlert" class="alert"></div>
+
+            <!-- Auth Section -->
+            <div id="vaultAuthSection" style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h4 style="margin-top: 0; color: #333;">Authentification</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label style="font-size: 0.9em;">ID Utilisateur</label>
+                        <input type="text" id="modalVaultAuthUserId" placeholder="user123" style="padding: 8px; font-size: 0.9em;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label style="font-size: 0.9em;">Mot de passe</label>
+                        <input type="password" id="modalVaultAuthPassword" placeholder="••••••••" style="padding: 8px; font-size: 0.9em;">
+                    </div>
+                    <div style="display: flex; gap: 5px; align-items: flex-end;">
+                        <button class="btn btn-primary" onclick="modalVaultRegister()" style="flex: 1; padding: 8px; font-size: 0.85em; margin-bottom: 0;">Créer</button>
+                        <button class="btn btn-primary" onclick="modalVaultLogin()" style="flex: 1; padding: 8px; font-size: 0.85em; margin-bottom: 0;">Connexion</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Section (hidden until auth) -->
+            <div id="vaultContentSection" style="display: none;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <!-- Upload Section -->
+                    <div style="border-right: 1px solid #ddd; padding-right: 20px;">
+                        <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.1em;">📤 Télécharger</h3>
+                        
+                        <div class="form-group">
+                            <label>Nom du Document</label>
+                            <input type="text" id="modalVaultDocName" placeholder="Ex: Contrat_2024">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Fichier (optionnel)</label>
+                            <input type="file" id="modalVaultFile">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Ou Contenu Texte</label>
+                            <textarea id="modalVaultData" placeholder="Collez votre texte ici..." style="height: 80px; font-size: 0.9em;"></textarea>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="modalVaultUpload()" style="width: 100%;">💾 Télécharger</button>
+                    </div>
+
+                    <!-- List Section -->
+                    <div>
+                        <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.1em;">📋 Mes Documents</h3>
+                        
+                        <button class="btn btn-primary" onclick="modalVaultLoadDocs()" style="width: 100%; margin-bottom: 15px;">🔍 Charger</button>
+
+                        <div id="modalVaultDocsList" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; padding: 10px; background: #f9f9f9;">
+                            <div style="text-align: center; color: #999; padding: 20px;">
+                                Cliquez sur "Charger" pour voir vos documents
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audit Log Section -->
+                <div style="margin-top: 20px; border-top: 1px solid #ddd; padding-top: 20px;">
+                    <h4 style="color: #667eea; margin-bottom: 10px;">📊 Historique d'accès</h4>
+                    <button class="btn btn-primary" onclick="modalVaultLoadAudit()" style="width: 100%; margin-bottom: 10px; padding: 8px; font-size: 0.9em;">Charger l'historique</button>
+                    <div id="modalVaultAuditList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; padding: 10px; background: #f9f9f9; font-size: 0.85em;">
+                        <div style="text-align: center; color: #999; padding: 10px;">
+                            Cliquez sur "Charger l'historique" pour voir vos actions
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Déconnexion -->
+                <div style="margin-top: 15px; text-align: center;">
+                    <button class="btn btn-secondary" onclick="modalVaultLogout()" style="padding: 8px 20px; font-size: 0.9em;">🚪 Déconnexion</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1465,91 +1544,276 @@
             });
         });
 
-        // Show services modal
-        function showServices(e) {
-            e.preventDefault();
-            const modal = document.getElementById('servicesModal');
-            if (modal) {
-                modal.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
+        // ======================== COFFRE-FORT SESSION STORAGE ========================
+        let vaultSession = {
+            userId: null,
+            password: null
+        };
+
+        // ======================== COFFRE-FORT AUTH FUNCTIONS ========================
+        function modalVaultRegister() {
+            const userId = document.getElementById('modalVaultAuthUserId').value.trim();
+            const password = document.getElementById('modalVaultAuthPassword').value.trim();
+
+            if (!userId || !password) {
+                showAlert('vaultAlert', 'Veuillez entrer un ID et un mot de passe', 'error');
+                return;
             }
+
+            const formData = new FormData();
+            formData.append('user_id', userId);
+            formData.append('password', password);
+
+            fetch('/api/vault/register', { method: 'POST', body: formData })
+                .then(r => r.json())
+                .then(d => {
+                    if (d.success) {
+                        showAlert('vaultAlert', 'Compte créé! Vous êtes connecté.', 'success');
+                        vaultSession.userId = userId;
+                        vaultSession.password = password;
+                        document.getElementById('vaultAuthSection').style.display = 'none';
+                        document.getElementById('vaultContentSection').style.display = 'block';
+                    } else {
+                        showAlert('vaultAlert', d.message || 'Erreur lors de la création', 'error');
+                    }
+                })
+                .catch(err => showAlert('vaultAlert', 'Erreur: ' + err.message, 'error'));
         }
 
-        // Close services modal
-        function closeServicesModal() {
-            const modal = document.getElementById('servicesModal');
-            if (modal) {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto';
+        function modalVaultLogin() {
+            const userId = document.getElementById('modalVaultAuthUserId').value.trim();
+            const password = document.getElementById('modalVaultAuthPassword').value.trim();
+
+            if (!userId || !password) {
+                showAlert('vaultAlert', 'Veuillez entrer un ID et un mot de passe', 'error');
+                return;
             }
+
+            const formData = new FormData();
+            formData.append('user_id', userId);
+            formData.append('password', password);
+
+            fetch('/api/vault/login', { method: 'POST', body: formData })
+                .then(r => r.json())
+                .then(d => {
+                    if (d.success) {
+                        showAlert('vaultAlert', 'Bienvenue ' + userId + '!', 'success');
+                        vaultSession.userId = userId;
+                        vaultSession.password = password;
+                        document.getElementById('vaultAuthSection').style.display = 'none';
+                        document.getElementById('vaultContentSection').style.display = 'block';
+                    } else {
+                        showAlert('vaultAlert', d.message || 'Authentification échouée', 'error');
+                    }
+                })
+                .catch(err => showAlert('vaultAlert', 'Erreur: ' + err.message, 'error'));
         }
 
-        // Close modal when clicking outside
-        window.addEventListener('click', function(e) {
-            const modal = document.getElementById('servicesModal');
-            if (e.target === modal) {
-                closeServicesModal();
-            }
-        });
+        function modalVaultLogout() {
+            vaultSession.userId = null;
+            vaultSession.password = null;
+            document.getElementById('vaultAuthSection').style.display = 'block';
+            document.getElementById('vaultContentSection').style.display = 'none';
+            document.getElementById('modalVaultAuthUserId').value = '';
+            document.getElementById('modalVaultAuthPassword').value = '';
+            document.getElementById('modalVaultDocName').value = '';
+            document.getElementById('modalVaultFile').value = '';
+            document.getElementById('modalVaultData').value = '';
+            document.getElementById('modalVaultDocsList').innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">Cliquez sur "Charger" pour voir vos documents</div>';
+            showAlert('vaultAlert', 'Déconnecté', 'info');
+        }
 
-        // Navigate to URL and close modal
-        function navigateTo(anchorId) {
-            closeServicesModal();
-            // Map RSA to AES since they're on the same card
-            if (anchorId === 'service-rsa') {
-                anchorId = 'service-aes';
+        // ======================== COFFRE-FORT FUNCTIONS ========================
+        function modalVaultUpload() {
+            if (!vaultSession.userId) {
+                showAlert('vaultAlert', 'Veuillez d\'abord vous authentifier', 'error');
+                return;
             }
-            const target = document.getElementById(anchorId);
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth' });
+
+            const docName = document.getElementById('modalVaultDocName').value.trim();
+            const fileInput = document.getElementById('modalVaultFile');
+            const docData = document.getElementById('modalVaultData').value.trim();
+
+            if (!docName) {
+                showAlert('vaultAlert', 'Veuillez entrer un nom de document', 'error');
+                return;
             }
+
+            if (fileInput.files.length === 0 && !docData) {
+                showAlert('vaultAlert', 'Veuillez sélectionner un fichier ou ajouter du texte', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('user_id', vaultSession.userId);
+            formData.append('password', vaultSession.password);
+            formData.append('doc_name', docName);
+            
+            if (fileInput.files.length > 0) {
+                formData.append('file', fileInput.files[0]);
+            } else if (docData) {
+                formData.append('doc_data', docData);
+            }
+
+            fetch('/api/vault/store', { method: 'POST', body: formData })
+                .then(r => r.json())
+                .then(d => {
+                    if (d.error) {
+                        showAlert('vaultAlert', 'Erreur: ' + d.error, 'error');
+                        return;
+                    }
+                    showAlert('vaultAlert', 'Document téléchargé! ID: ' + d.doc_id, 'success');
+                    document.getElementById('modalVaultDocName').value = '';
+                    document.getElementById('modalVaultFile').value = '';
+                    document.getElementById('modalVaultData').value = '';
+                    setTimeout(modalVaultLoadDocs, 800);
+                })
+                .catch(err => showAlert('vaultAlert', 'Erreur: ' + err.message, 'error'));
+        }
+
+        function modalVaultLoadDocs() {
+            if (!vaultSession.userId) {
+                showAlert('vaultAlert', 'Veuillez d\'abord vous authentifier', 'error');
+                return;
+            }
+
+            const container = document.getElementById('modalVaultDocsList');
+            container.innerHTML = '<div style="text-align: center;">Chargement...</div>';
+
+            fetch(`/api/vault/list/${vaultSession.userId}/${encodeURIComponent(vaultSession.password)}`)
+                .then(r => {
+                    if (r.status === 401) {
+                        showAlert('vaultAlert', 'Authentification échouée', 'error');
+                        modalVaultLogout();
+                        throw new Error('Auth failed');
+                    }
+                    return r.json();
+                })
+                .then(documents => {
+                    if (!Array.isArray(documents) || documents.length === 0) {
+                        container.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">Aucun document</div>';
+                        showAlert('vaultAlert', 'Aucun document trouvé', 'info');
+                        return;
+                    }
+
+                    let html = '';
+                    documents.forEach(doc => {
+                        html += `
+                            <div style="background: white; padding: 10px; margin: 8px 0; border-radius: 4px; border-left: 3px solid #667eea;">
+                                <div style="font-weight: bold; margin-bottom: 5px;">📄 ${doc.doc_name}</div>
+                                <div style="font-size: 0.85em; color: #666; margin-bottom: 8px;">
+                                    ${doc.doc_type} | ${doc.created_at}
+                                </div>
+                                <div style="display: flex; gap: 5px;">
+                                    <button class="vault-modal-dl-btn" data-doc-id="${doc.doc_id}" data-doc-name="${doc.doc_name}" style="padding: 4px 10px; font-size: 0.8em; background: #667eea; color: white; border: none; border-radius: 3px; cursor: pointer;">📥 DL</button>
+                                    <button class="vault-modal-del-btn" data-doc-id="${doc.doc_id}" style="padding: 4px 10px; font-size: 0.8em; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer;">🗑️ DEL</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    container.innerHTML = html;
+                    
+                    document.querySelectorAll('.vault-modal-dl-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const docId = this.getAttribute('data-doc-id');
+                            const docName = this.getAttribute('data-doc-name');
+                            modalVaultDownload(docId, docName);
+                        });
+                    });
+                    
+                    document.querySelectorAll('.vault-modal-del-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const docId = this.getAttribute('data-doc-id');
+                            modalVaultDelete(docId);
+                        });
+                    });
+                    
+                    showAlert('vaultAlert', documents.length + ' document(s)', 'success');
+                })
+                .catch(err => {
+                    if (err.message !== 'Auth failed') {
+                        container.innerHTML = '<div style="text-align: center; color: red; padding: 20px;">Erreur: ' + err.message + '</div>';
+                        showAlert('vaultAlert', 'Erreur: ' + err.message, 'error');
+                    }
+                });
+        }
+
+        function modalVaultDownload(docId, docName) {
+            if (!vaultSession.userId) return;
+            
+            const link = document.createElement('a');
+            link.href = `/api/vault/retrieve/${vaultSession.userId}/${encodeURIComponent(vaultSession.password)}/${docId}`;
+            link.download = docName || 'document';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function modalVaultDelete(docId) {
+            if (!vaultSession.userId) return;
+            
+            if (!confirm('Supprimer ce document ?')) return;
+
+            fetch(`/api/vault/delete/${vaultSession.userId}/${encodeURIComponent(vaultSession.password)}/${docId}`, { method: 'DELETE' })
+                .then(r => r.json())
+                .then(d => {
+                    if (d.success) {
+                        showAlert('vaultAlert', 'Document supprimé', 'success');
+                        modalVaultLoadDocs();
+                    } else {
+                        showAlert('vaultAlert', 'Erreur: ' + d.error, 'error');
+                    }
+                })
+                .catch(err => showAlert('vaultAlert', 'Erreur: ' + err.message, 'error'));
+        }
+
+        function modalVaultLoadAudit() {
+            if (!vaultSession.userId) {
+                showAlert('vaultAlert', 'Veuillez d\'abord vous authentifier', 'error');
+                return;
+            }
+
+            const container = document.getElementById('modalVaultAuditList');
+            container.innerHTML = '<div style="text-align: center;">Chargement...</div>';
+
+            fetch(`/api/vault/audit/${vaultSession.userId}/${encodeURIComponent(vaultSession.password)}`)
+                .then(r => {
+                    if (r.status === 401) {
+                        showAlert('vaultAlert', 'Authentification échouée', 'error');
+                        modalVaultLogout();
+                        throw new Error('Auth failed');
+                    }
+                    return r.json();
+                })
+                .then(logs => {
+                    if (!Array.isArray(logs) || logs.length === 0) {
+                        container.innerHTML = '<div style="text-align: center; color: #999; padding: 10px;">Aucune action</div>';
+                        return;
+                    }
+
+                    let html = '';
+                    logs.slice(0, 20).forEach(log => {
+                        const timestamp = new Date(log.timestamp).toLocaleString('fr-FR');
+                        const statusColor = log.status === 'success' ? '#4CAF50' : '#f44336';
+                        html += `
+                            <div style="padding: 8px; margin: 5px 0; background: #f5f5f5; border-radius: 3px; border-left: 3px solid ${statusColor}; font-size: 0.8em;">
+                                <strong>${log.action}</strong> - ${log.doc_name || 'N/A'}<br>
+                                <span style="color: #666;">${timestamp}</span>
+                            </div>
+                        `;
+                    });
+
+                    container.innerHTML = html;
+                })
+                .catch(err => {
+                    if (err.message !== 'Auth failed') {
+                        container.innerHTML = '<div style="text-align: center; color: red; padding: 10px;">Erreur</div>';
+                    }
+                });
         }
     </script>
 
-    <!-- Services Modal -->
-    <div id="servicesModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
-        <div style="background: white; border-radius: 15px; padding: 40px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; position: relative;">
-            <button onclick="closeServicesModal()" style="position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">×</button>
-            
-            <h2 style="color: #667eea; margin-bottom: 30px; margin-top: 0;">Sélectionnez un service</h2>
-            
-            <div style="display: grid; gap: 20px;">
-                <!-- AES Encryption -->
-                <div onclick="navigateTo('service-aes');" style="padding: 20px; border: 2px solid #667eea; border-radius: 10px; cursor: pointer; transition: all 0.3s; background: #f8f9ff;">
-                    <h3 style="color: #667eea; margin: 0 0 10px 0;">🔒 Chiffrement AES-256</h3>
-                    <p style="margin: 0; color: #666; font-size: 14px;">Chiffrez vos fichiers avec une cle robuste</p>
-                </div>
-                
-                <!-- RSA Encryption -->
-                <div onclick="navigateTo('service-rsa');" style="padding: 20px; border: 2px solid #764ba2; border-radius: 10px; cursor: pointer; transition: all 0.3s; background: #faf8ff;">
-                    <h3 style="color: #764ba2; margin: 0 0 10px 0;">🔐 Chiffrement RSA-2048</h3>
-                    <p style="margin: 0; color: #666; font-size: 14px;">Chiffrement asymetrique haute securite</p>
-                </div>
-                
-                <!-- Signature -->
-                <div onclick="navigateTo('service-signature');" style="padding: 20px; border: 2px solid #667eea; border-radius: 10px; cursor: pointer; transition: all 0.3s; background: #f8f9ff;">
-                    <h3 style="color: #667eea; margin: 0 0 10px 0;">✍️ Signature Electronique</h3>
-                    <p style="margin: 0; color: #666; font-size: 14px;">Signez vos documents de maniere authentifiee</p>
-                </div>
-                
-                <!-- QR Codes -->
-                <div onclick="navigateTo('service-qr');" style="padding: 20px; border: 2px solid #764ba2; border-radius: 10px; cursor: pointer; transition: all 0.3s; background: #faf8ff;">
-                    <h3 style="color: #764ba2; margin: 0 0 10px 0;">📱 Codes QR Securises</h3>
-                    <p style="margin: 0; color: #666; font-size: 14px;">Generez des codes QR chiffres et signes</p>
-                </div>
-                
-                <!-- Certificates -->
-                <div onclick="navigateTo('service-certs');" style="padding: 20px; border: 2px solid #667eea; border-radius: 10px; cursor: pointer; transition: all 0.3s; background: #f8f9ff;">
-                    <h3 style="color: #667eea; margin: 0 0 10px 0;">🧾 Certificats Numeriques</h3>
-                    <p style="margin: 0; color: #666; font-size: 14px;">Creez et gerez vos certificats X.509</p>
-                </div>
-            </div>
-            
-            <p style="text-align: center; color: #999; font-size: 12px; margin-top: 30px; margin-bottom: 0;">Cliquez sur un service pour commencer</p>
-        </div>
-    </div>
 
-</body>
-</html>
 
     

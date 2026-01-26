@@ -1,4 +1,4 @@
-from crypto_utils import generate_key_pair, save_private_key, save_public_key
+from services.crypto_utils import generate_key_pair, save_private_key, save_public_key
 import os
 
 # Créer le dossier keys si inexistant

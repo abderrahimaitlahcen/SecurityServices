@@ -324,6 +324,7 @@
         <button class="tab-btn" onclick="switchTab('signature', event)">✍️ Signature RSA</button>
         <button class="tab-btn" onclick="switchTab('qr', event)">📱 QR Code</button>
         <button class="tab-btn" onclick="switchTab('certs', event)">🧾 Certificats</button>
+        <button class="tab-btn" onclick="switchTab('vault', event)">🔐 Coffre-Fort</button>
     </div>
 
     <!-- TAB: AES -->
@@ -468,6 +469,90 @@
             </div>
         </div>
     </div>
+
+    <!-- TAB: COFFRE-FORT -->
+    <div id="vault" class="tab-content">
+        <div class="card">
+            <h2>🔐 Coffre-Fort Numérique</h2>
+            <p style="color: #999; margin-bottom: 20px;">Stockage sécurisé et chiffré de vos documents sensibles avec authentification</p>
+            <div id="alertVault" class="alert"></div>
+
+            <!-- Auth Section -->
+            <div id="vaultAuthSection" style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="margin-top: 0; color: #667eea;">Authentification</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label style="font-size: 0.9em;">ID Utilisateur</label>
+                        <input type="text" id="vaultUserId" placeholder="user123" style="padding: 8px; font-size: 0.9em;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label style="font-size: 0.9em;">Mot de passe</label>
+                        <input type="password" id="vaultPassword" placeholder="••••••••" style="padding: 8px; font-size: 0.9em;">
+                    </div>
+                    <div style="display: flex; gap: 5px; align-items: flex-end;">
+                        <button class="btn-primary" onclick="vaultRegister()" style="flex: 1; padding: 8px; font-size: 0.85em; margin-bottom: 0;">Créer</button>
+                        <button class="btn-primary" onclick="vaultLogin()" style="flex: 1; padding: 8px; font-size: 0.85em; margin-bottom: 0;">Connexion</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Section (hidden until auth) -->
+            <div id="vaultContentSection" style="display: none;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <!-- Upload Section -->
+                    <div style="border-right: 1px solid #ddd; padding-right: 20px;">
+                        <h3 style="color: #667eea; margin-bottom: 15px;">📤 Télécharger</h3>
+                        
+                        <div class="form-group">
+                            <label for="vaultDocName">Nom du Document</label>
+                            <input type="text" id="vaultDocName" placeholder="Ex: Contrat_2024">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="vaultFile">Fichier (optionnel)</label>
+                            <input type="file" id="vaultFile">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="vaultData">Ou Contenu Texte</label>
+                            <textarea id="vaultData" placeholder="Collez votre texte ici..." style="height: 100px; font-family: monospace;"></textarea>
+                        </div>
+
+                        <button class="btn-primary" onclick="vaultUpload()" style="width: 100%;">💾 Télécharger</button>
+                    </div>
+
+                    <!-- List Section -->
+                    <div>
+                        <h3 style="color: #667eea; margin-bottom: 15px;">📋 Mes Documents</h3>
+
+                        <button class="btn-primary" onclick="vaultLoadDocs()" style="width: 100%; margin-bottom: 15px;">🔍 Charger</button>
+
+                        <div id="vaultDocsList" style="max-height: 350px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; padding: 10px; background: #f9f9f9;">
+                            <div style="text-align: center; color: #999; padding: 20px;">
+                                Cliquez sur "Charger" pour voir vos documents
+                            </div>
+                        </div>
+
+                        <!-- Audit Log Section -->
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
+                            <h4 style="color: #667eea; margin-bottom: 10px; font-size: 0.95em;">📊 Historique</h4>
+                            <button class="btn-primary" onclick="vaultLoadAudit()" style="width: 100%; margin-bottom: 10px; padding: 8px; font-size: 0.9em;">Charger l'historique</button>
+                            <div id="vaultAuditList" style="max-height: 150px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; padding: 8px; background: #f5f5f5; font-size: 0.85em;">
+                                <div style="text-align: center; color: #999; padding: 10px;">
+                                    Cliquez sur "Charger l'historique"
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Logout -->
+                        <div style="margin-top: 10px; text-align: center;">
+                            <button class="btn-secondary" onclick="vaultLogout()" style="padding: 8px 20px; font-size: 0.9em;">🚪 Déconnexion</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -483,7 +568,9 @@ function switchTab(tabName, event) {
 
     // Afficher l'onglet sélectionné
     document.getElementById(tabName).classList.add('active');
-    event.target.classList.add('active');
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
     // Si on ouvre l'onglet certificats, rafraîchir la liste
     try {
         if (tabName === 'certs') {
@@ -495,6 +582,19 @@ function switchTab(tabName, event) {
         console.error('Erreur lors du switch vers certs:', e);
     }
 }
+
+// Handle hash navigation on page load
+window.addEventListener('load', function() {
+    if (window.location.hash) {
+        const tabName = window.location.hash.substring(1);
+        const tabBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => {
+            return btn.onclick && btn.onclick.toString().includes(`'${tabName}'`);
+        });
+        if (tabBtn) {
+            switchTab(tabName, { target: tabBtn });
+        }
+    }
+});
 
 // ======================== UTILITAIRES ========================
 function showAlert(elementId, message, type = 'info') {
@@ -861,6 +961,276 @@ function listCerts() {
 document.addEventListener('DOMContentLoaded', () => {
     try { listCerts(); } catch (e) { /* ignore */ }
 });
+
+// ======================== COFFRE-FORT SESSION STORAGE ========================
+let vaultSession = {
+    userId: null,
+    password: null
+};
+
+// ======================== COFFRE-FORT AUTH FUNCTIONS ========================
+function vaultRegister() {
+    const userId = document.getElementById('vaultUserId').value.trim();
+    const password = document.getElementById('vaultPassword').value.trim();
+
+    if (!userId || !password) {
+        showAlert('alertVault', 'Veuillez entrer un ID et un mot de passe', 'error');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('user_id', userId);
+    formData.append('password', password);
+
+    fetch('/api/vault/register', { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(d => {
+            if (d.success) {
+                showAlert('alertVault', 'Compte créé! Vous êtes connecté.', 'success');
+                vaultSession.userId = userId;
+                vaultSession.password = password;
+                document.getElementById('vaultAuthSection').style.display = 'none';
+                document.getElementById('vaultContentSection').style.display = 'block';
+            } else {
+                showAlert('alertVault', d.message || 'Erreur lors de la création', 'error');
+            }
+        })
+        .catch(err => showAlert('alertVault', 'Erreur: ' + err.message, 'error'));
+}
+
+function vaultLogin() {
+    const userId = document.getElementById('vaultUserId').value.trim();
+    const password = document.getElementById('vaultPassword').value.trim();
+
+    if (!userId || !password) {
+        showAlert('alertVault', 'Veuillez entrer un ID et un mot de passe', 'error');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('user_id', userId);
+    formData.append('password', password);
+
+    fetch('/api/vault/login', { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(d => {
+            if (d.success) {
+                showAlert('alertVault', 'Bienvenue ' + userId + '!', 'success');
+                vaultSession.userId = userId;
+                vaultSession.password = password;
+                document.getElementById('vaultAuthSection').style.display = 'none';
+                document.getElementById('vaultContentSection').style.display = 'block';
+            } else {
+                showAlert('alertVault', d.message || 'Authentification échouée', 'error');
+            }
+        })
+        .catch(err => showAlert('alertVault', 'Erreur: ' + err.message, 'error'));
+}
+
+function vaultLogout() {
+    vaultSession.userId = null;
+    vaultSession.password = null;
+    document.getElementById('vaultAuthSection').style.display = 'block';
+    document.getElementById('vaultContentSection').style.display = 'none';
+    document.getElementById('vaultUserId').value = '';
+    document.getElementById('vaultPassword').value = '';
+    document.getElementById('vaultDocName').value = '';
+    document.getElementById('vaultFile').value = '';
+    document.getElementById('vaultData').value = '';
+    document.getElementById('vaultDocsList').innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">Cliquez sur "Charger" pour voir vos documents</div>';
+    showAlert('alertVault', 'Déconnecté', 'info');
+}
+
+// ======================== COFFRE-FORT FUNCTIONS ========================
+function vaultUpload() {
+    if (!vaultSession.userId) {
+        showAlert('alertVault', 'Veuillez d\'abord vous authentifier', 'error');
+        return;
+    }
+
+    const docName = document.getElementById('vaultDocName').value.trim();
+    const fileInput = document.getElementById('vaultFile');
+    const docData = document.getElementById('vaultData').value.trim();
+
+    if (!docName) {
+        showAlert('alertVault', 'Veuillez entrer un nom de document', 'error');
+        return;
+    }
+
+    if (fileInput.files.length === 0 && !docData) {
+        showAlert('alertVault', 'Veuillez sélectionner un fichier ou ajouter du texte', 'error');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('user_id', vaultSession.userId);
+    formData.append('password', vaultSession.password);
+    formData.append('doc_name', docName);
+    
+    if (fileInput.files.length > 0) {
+        formData.append('file', fileInput.files[0]);
+    } else if (docData) {
+        formData.append('doc_data', docData);
+    }
+
+    fetch('/api/vault/store', { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(d => {
+            if (d.error) {
+                showAlert('alertVault', 'Erreur: ' + d.error, 'error');
+                return;
+            }
+            showAlert('alertVault', 'Document téléchargé! ID: ' + d.doc_id, 'success');
+            document.getElementById('vaultDocName').value = '';
+            document.getElementById('vaultFile').value = '';
+            document.getElementById('vaultData').value = '';
+            setTimeout(vaultLoadDocs, 800);
+        })
+        .catch(err => showAlert('alertVault', 'Erreur: ' + err.message, 'error'));
+}
+
+function vaultLoadDocs() {
+    if (!vaultSession.userId) {
+        showAlert('alertVault', 'Veuillez d\'abord vous authentifier', 'error');
+        return;
+    }
+
+    const container = document.getElementById('vaultDocsList');
+    container.innerHTML = '<div style="text-align: center;">Chargement...</div>';
+
+    fetch(`/api/vault/list/${vaultSession.userId}/${encodeURIComponent(vaultSession.password)}`)
+        .then(r => {
+            if (r.status === 401) {
+                showAlert('alertVault', 'Authentification échouée', 'error');
+                vaultLogout();
+                throw new Error('Auth failed');
+            }
+            return r.json();
+        })
+        .then(documents => {
+            if (!Array.isArray(documents) || documents.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">Aucun document</div>';
+                showAlert('alertVault', 'Aucun document trouvé', 'info');
+                return;
+            }
+
+            let html = '';
+            documents.forEach(doc => {
+                html += `
+                    <div style="background: #f5f5f5; padding: 10px; margin: 8px 0; border-radius: 4px; border-left: 3px solid #667eea;">
+                        <div style="font-weight: bold; margin-bottom: 5px;">📄 ${doc.doc_name}</div>
+                        <div style="font-size: 0.9em; color: #666; margin-bottom: 8px;">
+                            ${doc.doc_type} | ${doc.created_at}
+                        </div>
+                        <div style="display: flex; gap: 5px;">
+                            <button class="vault-app-dl-btn btn-secondary" data-doc-id="${doc.doc_id}" data-doc-name="${doc.doc_name}" style="padding: 4px 10px; font-size: 0.85em;">📥 DL</button>
+                            <button class="vault-app-del-btn btn-secondary" data-doc-id="${doc.doc_id}" style="padding: 4px 10px; font-size: 0.85em; background: #e74c3c;">🗑️ DEL</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            
+            // Add event listeners to buttons
+            document.querySelectorAll('.vault-app-dl-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const docId = this.getAttribute('data-doc-id');
+                    const docName = this.getAttribute('data-doc-name');
+                    vaultDownload(docId, docName);
+                });
+            });
+            
+            document.querySelectorAll('.vault-app-del-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const docId = this.getAttribute('data-doc-id');
+                    vaultDelete(docId);
+                });
+            });
+            
+            showAlert('alertVault', documents.length + ' document(s) trouvé(s)', 'success');
+        })
+        .catch(err => {
+            if (err.message !== 'Auth failed') {
+                container.innerHTML = '<div style="text-align: center; color: red; padding: 20px;">Erreur: ' + err.message + '</div>';
+                showAlert('alertVault', 'Erreur: ' + err.message, 'error');
+            }
+        });
+}
+
+function vaultDownload(docId, docName) {
+    if (!vaultSession.userId) return;
+    
+    const link = document.createElement('a');
+    link.href = `/api/vault/retrieve/${vaultSession.userId}/${encodeURIComponent(vaultSession.password)}/${docId}`;
+    link.download = docName || 'document';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function vaultDelete(docId) {
+    if (!vaultSession.userId) return;
+    
+    if (!confirm('Supprimer ce document ?')) return;
+
+    fetch(`/api/vault/delete/${vaultSession.userId}/${encodeURIComponent(vaultSession.password)}/${docId}`, { method: 'DELETE' })
+        .then(r => r.json())
+        .then(d => {
+            if (d.success) {
+                showAlert('alertVault', 'Document supprimé', 'success');
+                vaultLoadDocs();
+            } else {
+                showAlert('alertVault', 'Erreur: ' + d.error, 'error');
+            }
+        })
+        .catch(err => showAlert('alertVault', 'Erreur: ' + err.message, 'error'));
+}
+
+function vaultLoadAudit() {
+    if (!vaultSession.userId) {
+        showAlert('alertVault', 'Veuillez d\'abord vous authentifier', 'error');
+        return;
+    }
+
+    const container = document.getElementById('vaultAuditList');
+    container.innerHTML = '<div style="text-align: center;">Chargement...</div>';
+
+    fetch(`/api/vault/audit/${vaultSession.userId}/${encodeURIComponent(vaultSession.password)}`)
+        .then(r => {
+            if (r.status === 401) {
+                showAlert('alertVault', 'Authentification échouée', 'error');
+                vaultLogout();
+                throw new Error('Auth failed');
+            }
+            return r.json();
+        })
+        .then(logs => {
+            if (!Array.isArray(logs) || logs.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #999; padding: 10px;">Aucune action</div>';
+                return;
+            }
+
+            let html = '';
+            logs.slice(0, 20).forEach(log => {
+                const timestamp = new Date(log.timestamp).toLocaleString('fr-FR');
+                const statusColor = log.status === 'success' ? '#4CAF50' : '#f44336';
+                html += `
+                    <div style="padding: 8px; margin: 5px 0; background: #f5f5f5; border-radius: 3px; border-left: 3px solid ${statusColor}; font-size: 0.8em;">
+                        <strong>${log.action}</strong> - ${log.doc_name || 'N/A'}<br>
+                        <span style="color: #666;">${timestamp}</span>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        })
+        .catch(err => {
+            if (err.message !== 'Auth failed') {
+                container.innerHTML = '<div style="text-align: center; color: red; padding: 10px;">Erreur</div>';
+            }
+        });
+}
 </script>
 
 </body>
