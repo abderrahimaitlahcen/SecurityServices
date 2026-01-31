@@ -1129,6 +1129,7 @@
     </div>
 
     <!-- Coffre-Fort Modal -->
+    <!-- Coffre-Fort Modal -->
     <div id="vaultModal" class="modal">
         <div class="modal-content" style="width: 90%; max-width: 900px; max-height: 90vh; overflow-y: auto;">
             <div class="modal-header">
@@ -1158,57 +1159,56 @@
 
             <!-- Content Section (hidden until auth) -->
             <div id="vaultContentSection" style="display: none;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <!-- Upload Section -->
-                    <div style="border-right: 1px solid #ddd; padding-right: 20px;">
-                        <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.1em;">📤 Télécharger</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+                    
+                    <!-- Section 1: Upload TEXTE -->
+                    <div style="border-right: 1px solid #ddd; padding-right: 15px;">
+                        <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.1em;">📝 Uploader du Texte</h3>
                         
                         <div class="form-group">
                             <label>Nom du Document</label>
-                            <input type="text" id="modalVaultDocName" placeholder="Ex: Contrat_2024">
+                            <input type="text" id="modalVaultTextName" placeholder="Ex: Notes_Importantes">
+                            <small style="color: #666; font-size: 0.85em;">Donnez un nom à votre document</small>
                         </div>
 
                         <div class="form-group">
-                            <label>Fichier (optionnel)</label>
-                            <input type="file" id="modalVaultFile">
+                            <label>Contenu Texte</label>
+                            <textarea id="modalVaultTextContent" placeholder="Collez votre texte ici..." style="height: 120px; font-size: 0.9em;"></textarea>
                         </div>
 
-                        <div class="form-group">
-                            <label>Ou Contenu Texte</label>
-                            <textarea id="modalVaultData" placeholder="Collez votre texte ici..." style="height: 80px; font-size: 0.9em;"></textarea>
-                        </div>
-
-                        <button class="btn btn-primary" onclick="modalVaultUpload()" style="width: 100%;">💾 Télécharger</button>
+                        <button class="btn btn-primary" onclick="modalVaultUploadText()" style="width: 100%;">💾 Sauvegarder</button>
                     </div>
 
-                    <!-- List Section -->
+                    <!-- Section 2: Upload FICHIER -->
+                    <div style="border-right: 1px solid #ddd; padding-right: 15px;">
+                        <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.1em;">📁 Uploader un Fichier</h3>
+                        
+                        <div class="form-group">
+                            <label>Choisir un Fichier</label>
+                            <input type="file" id="modalVaultFileInput">
+                            <small style="color: #666; font-size: 0.85em;">Le nom du fichier sera utilisé automatiquement</small>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="modalVaultUploadFile()" style="width: 100%; margin-top: 15px;">📤 Uploader</button>
+                    </div>
+
+                    <!-- Section 3: Mes Documents -->
                     <div>
                         <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.1em;">📋 Mes Documents</h3>
                         
-                        <button class="btn btn-primary" onclick="modalVaultLoadDocs()" style="width: 100%; margin-bottom: 15px;">🔍 Charger</button>
+                        <button class="btn btn-primary" onclick="modalVaultLoadDocs()" style="width: 100%; margin-bottom: 15px;">🔄 Actualiser</button>
 
-                        <div id="modalVaultDocsList" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; padding: 10px; background: #f9f9f9;">
+                        <div id="modalVaultDocsList" style="max-height: 250px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; padding: 10px; background: #f9f9f9;">
                             <div style="text-align: center; color: #999; padding: 20px;">
-                                Cliquez sur "Charger" pour voir vos documents
+                                Cliquez sur "Actualiser"
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Audit Log Section -->
-                <div style="margin-top: 20px; border-top: 1px solid #ddd; padding-top: 20px;">
-                    <h4 style="color: #667eea; margin-bottom: 10px;">📊 Historique d'accès</h4>
-                    <button class="btn btn-primary" onclick="modalVaultLoadAudit()" style="width: 100%; margin-bottom: 10px; padding: 8px; font-size: 0.9em;">Charger l'historique</button>
-                    <div id="modalVaultAuditList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; padding: 10px; background: #f9f9f9; font-size: 0.85em;">
-                        <div style="text-align: center; color: #999; padding: 10px;">
-                            Cliquez sur "Charger l'historique" pour voir vos actions
+                        <!-- Déconnexion -->
+                        <div style="margin-top: 15px; text-align: center;">
+                            <button class="btn btn-secondary" onclick="modalVaultLogout()" style="padding: 8px 20px; font-size: 0.9em;">🚪 Déconnexion</button>
                         </div>
                     </div>
-                </div>
-
-                <!-- Déconnexion -->
-                <div style="margin-top: 15px; text-align: center;">
-                    <button class="btn btn-secondary" onclick="modalVaultLogout()" style="padding: 8px 20px; font-size: 0.9em;">🚪 Déconnexion</button>
                 </div>
             </div>
         </div>
@@ -1616,9 +1616,13 @@
             document.getElementById('vaultContentSection').style.display = 'none';
             document.getElementById('modalVaultAuthUserId').value = '';
             document.getElementById('modalVaultAuthPassword').value = '';
-            document.getElementById('modalVaultDocName').value = '';
-            document.getElementById('modalVaultFile').value = '';
-            document.getElementById('modalVaultData').value = '';
+            // Clear modal inputs (updated IDs)
+            const txtName = document.getElementById('modalVaultTextName');
+            const txtContent = document.getElementById('modalVaultTextContent');
+            const fileInput = document.getElementById('modalVaultFileInput');
+            if (txtName) txtName.value = '';
+            if (txtContent) txtContent.value = '';
+            if (fileInput) fileInput.value = '';
             document.getElementById('modalVaultDocsList').innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">Cliquez sur "Charger" pour voir vos documents</div>';
             showAlert('vaultAlert', 'Déconnecté', 'info');
         }
@@ -1630,9 +1634,12 @@
                 return;
             }
 
-            const docName = document.getElementById('modalVaultDocName').value.trim();
-            const fileInput = document.getElementById('modalVaultFile');
-            const docData = document.getElementById('modalVaultData').value.trim();
+            // Fallback generic upload (tries multiple possible field ids)
+            const docNameEl = document.getElementById('modalVaultDocName') || document.getElementById('modalVaultTextName');
+            const fileInput = document.getElementById('modalVaultFile') || document.getElementById('modalVaultFileInput');
+            const docDataEl = document.getElementById('modalVaultData') || document.getElementById('modalVaultTextContent');
+            const docName = docNameEl ? docNameEl.value.trim() : '';
+            const docData = docDataEl ? docDataEl.value.trim() : '';
 
             if (!docName) {
                 showAlert('vaultAlert', 'Veuillez entrer un nom de document', 'error');
@@ -1663,12 +1670,82 @@
                         return;
                     }
                     showAlert('vaultAlert', 'Document téléchargé! ID: ' + d.doc_id, 'success');
-                    document.getElementById('modalVaultDocName').value = '';
-                    document.getElementById('modalVaultFile').value = '';
-                    document.getElementById('modalVaultData').value = '';
+                    if (document.getElementById('modalVaultDocName')) document.getElementById('modalVaultDocName').value = '';
+                    if (document.getElementById('modalVaultTextName')) document.getElementById('modalVaultTextName').value = '';
+                    if (document.getElementById('modalVaultFile')) document.getElementById('modalVaultFile').value = '';
+                    if (document.getElementById('modalVaultFileInput')) document.getElementById('modalVaultFileInput').value = '';
+                    if (document.getElementById('modalVaultData')) document.getElementById('modalVaultData').value = '';
+                    if (document.getElementById('modalVaultTextContent')) document.getElementById('modalVaultTextContent').value = '';
                     setTimeout(modalVaultLoadDocs, 800);
                 })
                 .catch(err => showAlert('vaultAlert', 'Erreur: ' + err.message, 'error'));
+        }
+
+        // Specific handlers for text and file uploads in the modal
+        function modalVaultUploadText() {
+            if (!vaultSession.userId) { showAlert('vaultAlert', 'Veuillez d\'abord vous authentifier', 'error'); return; }
+            const nameEl = document.getElementById('modalVaultTextName');
+            const contentEl = document.getElementById('modalVaultTextContent');
+            const name = nameEl ? nameEl.value.trim() : '';
+            const content = contentEl ? contentEl.value.trim() : '';
+            if (!name) { showAlert('vaultAlert', 'Veuillez entrer un nom de document', 'error'); return; }
+            if (!content) { showAlert('vaultAlert', 'Veuillez entrer du contenu texte', 'error'); return; }
+
+            const fd = new FormData();
+            fd.append('user_id', vaultSession.userId);
+            fd.append('password', vaultSession.password);
+            fd.append('doc_name', name);
+            fd.append('doc_data', content);
+
+            fetch('/api/vault/store', { method: 'POST', body: fd })
+                .then(async r => {
+                    const text = await r.text();
+                    let data = null;
+                    try { data = JSON.parse(text); } catch(_) { data = { raw: text }; }
+                    console.log('/api/vault/store response', r.status, data);
+                    if (!r.ok) {
+                        const msg = data && data.error ? data.error : (data && data.raw ? data.raw : 'Erreur serveur');
+                        showAlert('vaultAlert', 'Erreur: ' + msg + ` (status ${r.status})`, 'error');
+                        return;
+                    }
+                    if (data.error) { showAlert('vaultAlert', 'Erreur: ' + data.error, 'error'); return; }
+                    showAlert('vaultAlert', 'Document sauvegardé! ID: ' + data.doc_id, 'success');
+                    if (nameEl) nameEl.value = '';
+                    if (contentEl) contentEl.value = '';
+                    setTimeout(modalVaultLoadDocs, 800);
+                })
+                .catch(err => { console.error('fetch error', err); showAlert('vaultAlert', 'Erreur réseau: ' + err.message, 'error'); });
+        }
+
+        function modalVaultUploadFile() {
+            if (!vaultSession.userId) { showAlert('vaultAlert', 'Veuillez d\'abord vous authentifier', 'error'); return; }
+            const fileEl = document.getElementById('modalVaultFileInput');
+            if (!fileEl || fileEl.files.length === 0) { showAlert('vaultAlert', 'Veuillez sélectionner un fichier', 'error'); return; }
+            // Use filename as doc name
+            const file = fileEl.files[0];
+            const fd = new FormData();
+            fd.append('user_id', vaultSession.userId);
+            fd.append('password', vaultSession.password);
+            fd.append('doc_name', file.name);
+            fd.append('file', file);
+
+            fetch('/api/vault/store', { method: 'POST', body: fd })
+                .then(async r => {
+                    const text = await r.text();
+                    let data = null;
+                    try { data = JSON.parse(text); } catch(_) { data = { raw: text }; }
+                    console.log('/api/vault/store response', r.status, data);
+                    if (!r.ok) {
+                        const msg = data && data.error ? data.error : (data && data.raw ? data.raw : 'Erreur serveur');
+                        showAlert('vaultAlert', 'Erreur: ' + msg + ` (status ${r.status})`, 'error');
+                        return;
+                    }
+                    if (data.error) { showAlert('vaultAlert', 'Erreur: ' + data.error, 'error'); return; }
+                    showAlert('vaultAlert', 'Fichier uploadé! ID: ' + data.doc_id, 'success');
+                    if (fileEl) fileEl.value = '';
+                    setTimeout(modalVaultLoadDocs, 800);
+                })
+                .catch(err => { console.error('fetch error', err); showAlert('vaultAlert', 'Erreur réseau: ' + err.message, 'error'); });
         }
 
         function modalVaultLoadDocs() {

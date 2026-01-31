@@ -235,8 +235,9 @@ class VaultService:
             
             # Enregistrer l'action
             self.db.log_action(user_id, 'STORE', doc_id, doc_name, status='success')
-            
-            return doc_id, 'Document stocké avec succès'
+
+            # Retourner doc_id et None pour indiquer absence d'erreur
+            return doc_id, None
         
         except Exception as e:
             self.db.log_action(user_id, 'STORE', doc_name, status=f'failed - {str(e)}')

@@ -8,6 +8,8 @@ from services.crypto_utils import load_private_key, sign_bytes
 from services.qr_helper import generate_qr_bytes
 from io import BytesIO
 import json
+import mimetypes
+import logging
 
 # --- Flask App ---
 app = Flask(__name__)
@@ -46,10 +48,6 @@ def app_index():
     """Application principale avec tous les outils"""
     return render_template('index.html')
 
-@app.route('/vault')
-def vault():
-    """Display Coffre-Fort service page"""
-    return render_template('vault.html')
 
 
 # -------------------------------------------------------------------
@@ -292,6 +290,7 @@ def store_document():
         user_id = request.form.get('user_id')
         password = request.form.get('password')
         doc_name = request.form.get('doc_name')
+        app.logger.info(f"/api/vault/store called user_id={user_id} doc_name={doc_name} files={list(request.files.keys())}")
         
         if not user_id or not password or not doc_name:
             return jsonify({'error': 'User ID, password, and document name required'}), 400
@@ -308,11 +307,14 @@ def store_document():
             doc_data = request.form.get('doc_data', '')
             doc_id, error = vault_service.store_document(user_id, password, doc_name, doc_data)
         
+        app.logger.info(f"/api/vault/store result doc_id={doc_id} error={error}")
         if error:
+            app.logger.error(f"/api/vault/store error for user={user_id}: {error}")
             return jsonify({'error': error}), 400
-        
+
         return jsonify({'success': True, 'doc_id': doc_id})
     except Exception as e:
+        app.logger.exception("Exception in /api/vault/store")
         return jsonify({'error': str(e)}), 400
 
 @app.route('/api/vault/list/<user_id>/<password>')
@@ -337,12 +339,17 @@ def retrieve_document(user_id, password, doc_id):
         if error:
             return jsonify({'error': error}), 401
         
-        if doc['type'] == 'file':
-            return send_file(BytesIO(doc['data']), as_attachment=True, download_name=doc['name'])
+        if doc['type'] == 'fichier' or doc['type'] == 'file':
+            # Guess mimetype from filename to preserve original format
+            guessed, _ = mimetypes.guess_type(doc['name'])
+            mime = guessed or 'application/octet-stream'
+            app.logger.info(f"/api/vault/retrieve sending file name={doc['name']} type={doc['type']} size={len(doc['data']) if doc['data'] else 0} mime={mime}")
+            return send_file(BytesIO(doc['data']), as_attachment=True, download_name=doc['name'], mimetype=mime)
         else:
             # For text documents, return as text file download
             text_bytes = BytesIO(doc['data'])
             text_bytes.seek(0)
+            app.logger.info(f"/api/vault/retrieve sending text name={doc['name']} size={len(doc['data']) if doc['data'] else 0}")
             filename = f"{doc['name']}.txt"
             return send_file(text_bytes, mimetype='text/plain', as_attachment=True, download_name=filename)
     except Exception as e:
